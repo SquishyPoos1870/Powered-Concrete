@@ -1,0 +1,105 @@
+---------------------------------------------------------------------------------------------------
+Version: 1.1.1
+Date: 2026-05-25
+  Changes:
+    - Restored the four visible powered floor recipes: Powered Concrete, Powered Hazard Concrete, Powered Refined Concrete, and Powered Refined Hazard Concrete.
+    - Kept powered floor items in the same floor/concrete crafting area as vanilla concrete items for a cleaner layout.
+    - Kept conversion and hazard-marking recipes hidden, including Remove Powered Concrete Hazard Markings and similar add/remove marking recipes.
+    - Added runtime recipe-state cleanup so old saves upgrading from previous versions do not keep hidden conversion recipes enabled in the crafting UI.
+    - Updated README and Mod Portal description to match the new intended visible recipe list.
+  Notes:
+    - Intended visible floor list is vanilla floor items plus the four powered concrete variants only.
+
+---------------------------------------------------------------------------------------------------
+Version: 1.1.0
+Date: 2026-05-25
+  Changes:
+    - Simplified the normal crafting UI so only Powered Concrete is visible/unlocked.
+    - Hid the extra powered refined/hazard recipes because they all performed the same power function and cluttered the layout.
+    - Stopped moving vanilla hazard concrete conversion recipes into the powered concrete subgroup.
+    - Kept old powered refined/hazard item, tile, and recipe prototypes as hidden compatibility support for older saves/blueprints.
+    - Kept exact tile-by-tile hidden power behaviour and the /powered-concrete-rebuild command.
+  Notes:
+    - New players should now only see one Powered Concrete recipe after concrete research.
+
+---------------------------------------------------------------------------------------------------
+Version: 1.0.9
+Date: 2026-05-25
+  Changes:
+    - Renamed the internal Factorio mod ID from the legacy compatibility name to Powered_Concrete.
+    - Repacked the release as Powered_Concrete_1.0.9.zip with the matching Powered_Concrete_1.0.9 root folder.
+    - Updated internal asset paths to use the new mod ID.
+    - Kept the displayed mod title as Powered Concrete.
+  Notes:
+    - Factorio internal mod IDs cannot use spaces, so the in-game/display name is Powered Concrete while the technical ID is Powered_Concrete.
+    - Existing saves may ask you to enable the new mod ID after removing the older compatibility zip.
+
+---------------------------------------------------------------------------------------------------
+Version: 1.0.8
+Date: 2026-05-25
+  Changes:
+    - Renamed the displayed mod title and documentation to Powered Concrete.
+    - Cleaned README wording for GitHub and Mod Portal use.
+    - Added clearer credits and redistribution/licensing notes.
+    - Added release packaging files for a safer public-ready package.
+  Notes:
+    - Gameplay code is based on the working 1.0.7 build: exact tile-by-tile power and fixed Q/pipette support for all powered hazard variants.
+
+---------------------------------------------------------------------------------------------------
+Version: 1.0.7
+Date: 2026-05-25
+  Bugfixes:
+    - Fixed pipette tool support for powered hazard concrete and powered refined hazard concrete.
+    - Explicitly sets `placeable_by` on every powered tile prototype, including both left and right hazard tile directions.
+  Notes:
+    - This keeps the exact tile-by-tile power behaviour from 1.0.6.
+
+---------------------------------------------------------------------------------------------------
+Version: 1.0.6
+Date: 2026-05-25
+  Changes:
+    - Replaced the experimental grid connector system with exact tile-by-tile powered concrete again.
+    - Powered floor now only powers where powered concrete actually exists.
+    - Kept cleaner Factorio 2.0 runtime storage, rebuild, and event-sync logic.
+    - Removed the old grid-size startup setting.
+  Notes:
+    - This is the clean gameplay version. It is less broad/cheaty than the grid system, but exact powered floors are naturally heavier in huge paved bases.
+
+---------------------------------------------------------------------------------------------------
+Version: 1.0.5
+Date: 2026-05-25
+  Bugfixes:
+    - Fixed item-subgroup prototype names so they only use Factorio 2.0-safe characters.
+    - Kept the UPS grid connector pass from 1.0.4.
+
+---------------------------------------------------------------------------------------------------
+Version: 1.0.4
+Date: 2026-05-25
+  Bugfixes:
+    - Repacked with exact Factorio zip/folder naming for the 1.0.4 compatibility build.
+    - Confirms Factorio 2.0 metadata and removes the old flib dependency.
+  Notes:
+    - Delete old compatibility-build files from the mods folder before installing this version.
+
+---------------------------------------------------------------------------------------------------
+Version: 1.0.3
+Date: 2026-05-25
+  Changes:
+    - Added UPS/big-base pass.
+    - Replaced one-hidden-connector-per-powered-tile runtime logic with sparse grid-based hidden connectors.
+    - Added startup setting `powered-concrete-grid-size` to trade exactness for UPS performance.
+    - Added `/powered-concrete-rebuild` admin command for safely rebuilding hidden connector nodes in existing saves.
+    - Reduced tile-change work by batching event tiles into changed grid cells before scanning/creating/removing connectors.
+
+---------------------------------------------------------------------------------------------------
+Version: 1.0.2
+Date: 2026-05-25
+  Changes:
+    - Ported metadata to Factorio 2.0.
+    - Removed flib dependency by adding a small local icon overlay helper.
+    - Moved prototype creation into data.lua.
+    - Rebuilt tile, item, recipe, and technology definitions to avoid duplicate vanilla prototype definitions.
+    - Updated hidden electric connector prototype for Factorio 2.0 collision mask and hidden-property behaviour.
+    - Added safer runtime tile rebuilding for player-built, robot-built, mined, scripted, and existing-save tiles.
+    - Added README, changelog, and copyright notice files.
+---------------------------------------------------------------------------------------------------
