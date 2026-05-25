@@ -1,6 +1,0 @@
-require("prototypes.entity")
-require("prototypes.item-group")
-require("prototypes.tile")
-require("prototypes.item")
-require("prototypes.recipe")
-require("prototypes.technology")

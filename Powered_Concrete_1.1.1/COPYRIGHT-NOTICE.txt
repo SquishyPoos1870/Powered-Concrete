@@ -1,9 +1,0 @@
-Powered Concrete - Copyright / Attribution Notice
-
-Original mod, concept, base implementation, icons, and artwork are credited to JuneGame.
-
-Factorio 2.0 compatibility, cleanup, exact-tile runtime rebuild, Q / pipette fixes, documentation, and release packaging by Squishy1870.
-
-No explicit open-source license was included in the original source package provided for this rebuild. Treat the original work as all-rights-reserved unless the original author has provided separate permission or a license elsewhere.
-
-Do not remove the original author credit. Confirm redistribution permission before publishing publicly on GitHub or the Factorio Mod Portal.

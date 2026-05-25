@@ -1,7 +1,0 @@
-Powered Concrete License Notice
-
-This package includes work derived from the original Powered Concrete mod by JuneGame.
-
-The original source package did not include an explicit open-source license. Without a confirmed license or author permission, redistribution rights are not guaranteed.
-
-Use this package privately unless permission or licensing from the original author allows public redistribution. If published publicly, keep credit to JuneGame and include this notice.
