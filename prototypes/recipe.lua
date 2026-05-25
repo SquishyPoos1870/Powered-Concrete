@@ -9,6 +9,11 @@ local function item_stack(name, amount)
   return {type = "item", name = name, amount = amount or 1}
 end
 
+local function item_subgroup(item_name)
+  local item = data.raw["item"][item_name]
+  return item and item.subgroup or "terrain"
+end
+
 local function recipe_icons_from_item(item_name, overlay)
   local item = data.raw["item"][item_name]
   if not item then
@@ -27,106 +32,21 @@ local function recipe(def)
     icons = def.icons,
     ingredients = def.ingredients,
     results = def.results,
-    energy_required = 0.025,
+    energy_required = def.energy_required or 0.025,
     enabled = false,
+    hidden = def.hidden or false,
     allow_as_intermediate = false,
     allow_decomposition = false
   }
 end
 
-local function patch_existing_recipe(name, fields)
-  local existing = data.raw["recipe"][name]
-  if existing then
-    for key, value in pairs(fields) do
-      existing[key] = value
-    end
-  else
-    data:extend({recipe(fields)})
-  end
-end
-
--- Patch vanilla hazard conversion recipes instead of redefining duplicate recipe prototypes.
-patch_existing_recipe("hazard-concrete", {
-  name = "hazard-concrete",
-  order = "b[concrete]-a[converted]-b[hazard]",
-  subgroup = "powered-concrete-convert",
-  icons = recipe_icons_from_item("hazard-concrete", overlay_convert),
-  ingredients = {item_stack("concrete", 1)},
-  results = {item_stack("hazard-concrete", 1)},
-  energy_required = 0.025,
-  enabled = false,
-  allow_as_intermediate = false,
-  allow_decomposition = false
-})
-
-patch_existing_recipe("refined-hazard-concrete", {
-  name = "refined-hazard-concrete",
-  order = "b[concrete]-a[converted]-d[refined-hazard]",
-  subgroup = "powered-concrete-convert",
-  icons = recipe_icons_from_item("refined-hazard-concrete", overlay_convert),
-  ingredients = {item_stack("refined-concrete", 1)},
-  results = {item_stack("refined-hazard-concrete", 1)},
-  energy_required = 0.025,
-  enabled = false,
-  allow_as_intermediate = false,
-  allow_decomposition = false
-})
-
-data:extend({
-  recipe({
-    name = "unhazarded-concrete",
-    order = "b[concrete]-a[converted]-a[plain]",
-    subgroup = "powered-concrete-convert",
-    icons = recipe_icons_from_item("concrete", overlay_convert),
-    ingredients = {item_stack("hazard-concrete", 1)},
-    results = {item_stack("concrete", 1)}
-  }),
-  recipe({
-    name = "unhazarded-refined-concrete",
-    order = "b[concrete]-a[converted]-c[refined]",
-    subgroup = "powered-concrete-convert",
-    icons = recipe_icons_from_item("refined-concrete", overlay_convert),
-    ingredients = {item_stack("refined-hazard-concrete", 1)},
-    results = {item_stack("refined-concrete", 1)}
-  }),
-  recipe({
-    name = "unhazarded-powered-concrete",
-    order = "b[concrete]-a[converted]-e[powered-plain]",
-    subgroup = "powered-concrete-convert",
-    icons = recipe_icons_from_item("powered-concrete", overlay_convert_powered),
-    ingredients = {item_stack("powered-hazard-concrete", 1)},
-    results = {item_stack("powered-concrete", 1)}
-  }),
-  recipe({
-    name = "hazarded-powered-concrete",
-    order = "b[concrete]-a[converted]-f[powered-hazard]",
-    subgroup = "powered-concrete-convert",
-    icons = recipe_icons_from_item("powered-hazard-concrete", overlay_convert_powered),
-    ingredients = {item_stack("powered-concrete", 1)},
-    results = {item_stack("powered-hazard-concrete", 1)}
-  }),
-  recipe({
-    name = "unhazarded-powered-refined-concrete",
-    order = "b[concrete]-a[converted]-g[powered-refined]",
-    subgroup = "powered-concrete-convert",
-    icons = recipe_icons_from_item("powered-refined-concrete", overlay_convert_powered),
-    ingredients = {item_stack("powered-refined-hazard-concrete", 1)},
-    results = {item_stack("powered-refined-concrete", 1)}
-  }),
-  recipe({
-    name = "hazarded-powered-refined-concrete",
-    order = "b[concrete]-a[converted]-h[powered-refined-hazard]",
-    subgroup = "powered-concrete-convert",
-    icons = recipe_icons_from_item("powered-refined-hazard-concrete", overlay_convert_powered),
-    ingredients = {item_stack("powered-refined-concrete", 1)},
-    results = {item_stack("powered-refined-hazard-concrete", 1)}
-  }),
-
+-- Visible powered floor recipes. These are the only powered recipes intended to show in the crafting UI.
+local recipes = {
   recipe({
     name = "powered-concrete",
     localised_name = {"recipe-name.powered-concrete"},
-    order = "b[concrete]-b[powered]-a[plain]",
-    subgroup = "powered-concrete-power",
+    order = "b[concrete]-a[powered]",
+    subgroup = item_subgroup("concrete"),
     icons = recipe_icons_from_item("concrete", overlay_powered),
     ingredients = {item_stack("concrete", 1), item_stack("copper-cable", 1)},
     results = {item_stack("powered-concrete", 1)}
@@ -134,8 +54,8 @@ data:extend({
   recipe({
     name = "powered-hazard-concrete",
     localised_name = {"recipe-name.powered-hazard-concrete"},
-    order = "b[concrete]-b[powered]-b[hazard]",
-    subgroup = "powered-concrete-power",
+    order = "b[concrete]-b[powered-hazard]",
+    subgroup = item_subgroup("hazard-concrete"),
     icons = recipe_icons_from_item("hazard-concrete", overlay_powered),
     ingredients = {item_stack("hazard-concrete", 1), item_stack("copper-cable", 1)},
     results = {item_stack("powered-hazard-concrete", 1)}
@@ -143,8 +63,8 @@ data:extend({
   recipe({
     name = "powered-refined-concrete",
     localised_name = {"recipe-name.powered-refined-concrete"},
-    order = "b[concrete]-b[powered]-c[refined]",
-    subgroup = "powered-concrete-power",
+    order = "c[refined-concrete]-a[powered]",
+    subgroup = item_subgroup("refined-concrete"),
     icons = recipe_icons_from_item("refined-concrete", overlay_powered),
     ingredients = {item_stack("refined-concrete", 1), item_stack("copper-cable", 1)},
     results = {item_stack("powered-refined-concrete", 1)}
@@ -152,43 +72,102 @@ data:extend({
   recipe({
     name = "powered-refined-hazard-concrete",
     localised_name = {"recipe-name.powered-refined-hazard-concrete"},
-    order = "b[concrete]-b[powered]-d[refined-hazard]",
-    subgroup = "powered-concrete-power",
+    order = "c[refined-concrete]-b[powered-hazard]",
+    subgroup = item_subgroup("refined-hazard-concrete"),
     icons = recipe_icons_from_item("refined-hazard-concrete", overlay_powered),
     ingredients = {item_stack("refined-hazard-concrete", 1), item_stack("copper-cable", 1)},
     results = {item_stack("powered-refined-hazard-concrete", 1)}
-  }),
+  })
+}
 
-  recipe({
+-- Hidden compatibility / conversion recipes. These stay hidden so the crafting UI only shows
+-- the actual floor tiles, not extra hazard-marking or unpowered conversion recipes.
+local hidden_recipes = {
+  {
     name = "unpowered-concrete",
-    order = "b[concrete]-c[unpowered]-a[plain]",
-    subgroup = "powered-concrete-power",
+    order = "z[hidden]-a[unpowered-plain]",
+    subgroup = item_subgroup("concrete"),
     icons = recipe_icons_from_item("concrete", overlay_unpowered),
     ingredients = {item_stack("powered-concrete", 1)},
     results = {item_stack("concrete", 1), item_stack("copper-cable", 1)}
-  }),
-  recipe({
+  },
+  {
     name = "unpowered-hazard-concrete",
-    order = "b[concrete]-c[unpowered]-b[hazard]",
-    subgroup = "powered-concrete-power",
+    order = "z[hidden]-b[unpowered-hazard]",
+    subgroup = item_subgroup("hazard-concrete"),
     icons = recipe_icons_from_item("hazard-concrete", overlay_unpowered),
     ingredients = {item_stack("powered-hazard-concrete", 1)},
     results = {item_stack("hazard-concrete", 1), item_stack("copper-cable", 1)}
-  }),
-  recipe({
+  },
+  {
     name = "unpowered-refined-concrete",
-    order = "b[concrete]-c[unpowered]-c[refined]",
-    subgroup = "powered-concrete-power",
+    order = "z[hidden]-c[unpowered-refined]",
+    subgroup = item_subgroup("refined-concrete"),
     icons = recipe_icons_from_item("refined-concrete", overlay_unpowered),
     ingredients = {item_stack("powered-refined-concrete", 1)},
     results = {item_stack("refined-concrete", 1), item_stack("copper-cable", 1)}
-  }),
-  recipe({
+  },
+  {
     name = "unpowered-refined-hazard-concrete",
-    order = "b[concrete]-c[unpowered]-d[refined-hazard]",
-    subgroup = "powered-concrete-power",
+    order = "z[hidden]-d[unpowered-refined-hazard]",
+    subgroup = item_subgroup("refined-hazard-concrete"),
     icons = recipe_icons_from_item("refined-hazard-concrete", overlay_unpowered),
     ingredients = {item_stack("powered-refined-hazard-concrete", 1)},
     results = {item_stack("refined-hazard-concrete", 1), item_stack("copper-cable", 1)}
-  })
-})
+  },
+  {
+    name = "unhazarded-concrete",
+    order = "z[hidden]-e[unhazard-plain]",
+    subgroup = item_subgroup("concrete"),
+    icons = recipe_icons_from_item("concrete", overlay_convert),
+    ingredients = {item_stack("hazard-concrete", 1)},
+    results = {item_stack("concrete", 1)}
+  },
+  {
+    name = "unhazarded-refined-concrete",
+    order = "z[hidden]-f[unhazard-refined]",
+    subgroup = item_subgroup("refined-concrete"),
+    icons = recipe_icons_from_item("refined-concrete", overlay_convert),
+    ingredients = {item_stack("refined-hazard-concrete", 1)},
+    results = {item_stack("refined-concrete", 1)}
+  },
+  {
+    name = "unhazarded-powered-concrete",
+    order = "z[hidden]-g[unhazard-powered]",
+    subgroup = item_subgroup("powered-concrete"),
+    icons = recipe_icons_from_item("powered-concrete", overlay_convert_powered),
+    ingredients = {item_stack("powered-hazard-concrete", 1)},
+    results = {item_stack("powered-concrete", 1)}
+  },
+  {
+    name = "hazarded-powered-concrete",
+    order = "z[hidden]-h[hazard-powered]",
+    subgroup = item_subgroup("powered-hazard-concrete"),
+    icons = recipe_icons_from_item("powered-hazard-concrete", overlay_convert_powered),
+    ingredients = {item_stack("powered-concrete", 1)},
+    results = {item_stack("powered-hazard-concrete", 1)}
+  },
+  {
+    name = "unhazarded-powered-refined-concrete",
+    order = "z[hidden]-i[unhazard-powered-refined]",
+    subgroup = item_subgroup("powered-refined-concrete"),
+    icons = recipe_icons_from_item("powered-refined-concrete", overlay_convert_powered),
+    ingredients = {item_stack("powered-refined-hazard-concrete", 1)},
+    results = {item_stack("powered-refined-concrete", 1)}
+  },
+  {
+    name = "hazarded-powered-refined-concrete",
+    order = "z[hidden]-j[hazard-powered-refined]",
+    subgroup = item_subgroup("powered-refined-hazard-concrete"),
+    icons = recipe_icons_from_item("powered-refined-hazard-concrete", overlay_convert_powered),
+    ingredients = {item_stack("powered-refined-concrete", 1)},
+    results = {item_stack("powered-refined-hazard-concrete", 1)}
+  }
+}
+
+for _, def in pairs(hidden_recipes) do
+  def.hidden = true
+  recipes[#recipes + 1] = recipe(def)
+end
+
+data:extend(recipes)

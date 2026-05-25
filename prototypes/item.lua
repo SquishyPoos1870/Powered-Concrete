@@ -11,7 +11,11 @@ local function make_powered_item(base_name, new_name, result_tile, order)
   item.name = new_name
   item.localised_name = {"item-name." .. new_name}
   item.order = order
-  item.subgroup = "powered-concrete-power"
+
+  -- Keep powered floor items in the same crafting/floor area as the vanilla concrete items.
+  -- This avoids a noisy extra subgroup and keeps the visible UI list clean.
+  item.subgroup = base.subgroup
+
   item.icons = icon_util.with_overlay(base, powered_overlay)
   item.icon = nil
   item.icon_size = nil
@@ -23,8 +27,8 @@ local function make_powered_item(base_name, new_name, result_tile, order)
 end
 
 data:extend({
-  make_powered_item("concrete", "powered-concrete", "powered-concrete", "b[concrete]-a[powered]-a[plain]"),
-  make_powered_item("hazard-concrete", "powered-hazard-concrete", "powered-hazard-concrete-left", "b[concrete]-a[powered]-b[hazard]"),
-  make_powered_item("refined-concrete", "powered-refined-concrete", "powered-refined-concrete", "b[concrete]-a[powered]-c[refined]"),
-  make_powered_item("refined-hazard-concrete", "powered-refined-hazard-concrete", "powered-refined-hazard-concrete-left", "b[concrete]-a[powered]-d[refined-hazard]")
+  make_powered_item("concrete", "powered-concrete", "powered-concrete", "b[concrete]-a[powered]"),
+  make_powered_item("hazard-concrete", "powered-hazard-concrete", "powered-hazard-concrete-left", "b[concrete]-b[powered-hazard]"),
+  make_powered_item("refined-concrete", "powered-refined-concrete", "powered-refined-concrete", "c[refined-concrete]-a[powered]"),
+  make_powered_item("refined-hazard-concrete", "powered-refined-hazard-concrete", "powered-refined-hazard-concrete-left", "c[refined-concrete]-b[powered-hazard]")
 })

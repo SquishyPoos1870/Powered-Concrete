@@ -1,20 +1,8 @@
 local unlocks = {
-  "hazard-concrete",
-  "refined-hazard-concrete",
-  "unhazarded-concrete",
-  "unhazarded-refined-concrete",
-  "unhazarded-powered-concrete",
-  "unhazarded-powered-refined-concrete",
-  "hazarded-powered-concrete",
-  "hazarded-powered-refined-concrete",
   "powered-concrete",
   "powered-hazard-concrete",
   "powered-refined-concrete",
-  "powered-refined-hazard-concrete",
-  "unpowered-concrete",
-  "unpowered-hazard-concrete",
-  "unpowered-refined-concrete",
-  "unpowered-refined-hazard-concrete"
+  "powered-refined-hazard-concrete"
 }
 
 local tech = data.raw["technology"]["concrete"]

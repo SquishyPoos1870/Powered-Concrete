@@ -1,5 +1,7 @@
 local POWERED_TILES = {
   ["powered-concrete"] = true,
+
+  -- All powered concrete variants remain exact tile-by-tile powered floor tiles.
   ["powered-hazard-concrete-left"] = true,
   ["powered-hazard-concrete-right"] = true,
   ["powered-refined-concrete"] = true,
@@ -17,6 +19,26 @@ local POWERED_TILE_NAMES = {
 }
 
 local CONNECTOR_NAME = "powered-tile"
+
+local PUBLIC_RECIPES = {
+  "powered-concrete",
+  "powered-hazard-concrete",
+  "powered-refined-concrete",
+  "powered-refined-hazard-concrete"
+}
+
+local HIDDEN_RECIPES = {
+  "unpowered-concrete",
+  "unpowered-hazard-concrete",
+  "unpowered-refined-concrete",
+  "unpowered-refined-hazard-concrete",
+  "unhazarded-concrete",
+  "unhazarded-refined-concrete",
+  "unhazarded-powered-concrete",
+  "hazarded-powered-concrete",
+  "unhazarded-powered-refined-concrete",
+  "hazarded-powered-refined-concrete"
+}
 
 local function init_storage()
   storage.powered_concrete = storage.powered_concrete or {}
@@ -190,19 +212,54 @@ local function rebuild_all_surfaces()
   end
 end
 
+local function sync_recipe_states()
+  for _, force in pairs(game.forces) do
+    local concrete_tech = force.technologies and force.technologies["concrete"]
+    local concrete_unlocked = concrete_tech and concrete_tech.researched or false
+
+    for _, recipe_name in pairs(PUBLIC_RECIPES) do
+      local force_recipe = force.recipes[recipe_name]
+      if force_recipe then
+        force_recipe.enabled = concrete_unlocked
+      end
+    end
+
+    -- Keep old conversion / hazard-marking recipes out of the player crafting UI after upgrades.
+    for _, recipe_name in pairs(HIDDEN_RECIPES) do
+      local force_recipe = force.recipes[recipe_name]
+      if force_recipe then
+        force_recipe.enabled = false
+      end
+    end
+  end
+end
+
 local function on_surface_removed(event)
   init_storage()
   storage.powered_concrete.nodes[event.surface_index] = nil
 end
 
-script.on_init(rebuild_all_surfaces)
-script.on_configuration_changed(rebuild_all_surfaces)
+script.on_init(function()
+  rebuild_all_surfaces()
+  sync_recipe_states()
+end)
+
+script.on_configuration_changed(function()
+  rebuild_all_surfaces()
+  sync_recipe_states()
+end)
 
 script.on_event(defines.events.on_player_built_tile, on_tiles_changed)
 script.on_event(defines.events.on_robot_built_tile, on_tiles_changed)
 script.on_event(defines.events.on_player_mined_tile, on_tiles_changed)
 script.on_event(defines.events.on_robot_mined_tile, on_tiles_changed)
 script.on_event(defines.events.script_raised_set_tiles, on_tiles_changed)
+
+script.on_event(defines.events.on_research_finished, function(event)
+  if event.research and event.research.valid and event.research.name == "concrete" then
+    sync_recipe_states()
+  end
+end)
 
 if defines.events.on_surface_deleted then
   script.on_event(defines.events.on_surface_deleted, on_surface_removed)

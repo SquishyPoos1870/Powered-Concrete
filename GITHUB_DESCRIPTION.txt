@@ -1,1 +1,1 @@
-Powered Concrete is a Factorio 2.0 mod that lets concrete, refined concrete, and hazard concrete carry electric coverage through the floor with exact tile logic and improved runtime syncing.
+Powered Concrete adds powered versions of concrete, refined concrete, and hazard concrete for Factorio 2.0, letting factory floors carry electric coverage without visible power poles. Includes exact tile-by-tile hidden power, Q/pipette support, a clean visible floor recipe list, hidden conversion recipes, and compatibility cleanup from the original JuneGame mod.

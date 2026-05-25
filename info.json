@@ -1,9 +1,9 @@
 {
   "name": "Powered_Concrete",
-  "version": "1.0.9",
+  "version": "1.1.1",
   "title": "Powered Concrete",
   "author": "Squishy1870; original mod by JuneGame",
-  "description": "Powered Concrete adds concrete, refined concrete, and hazard concrete tiles that carry electric coverage through the floor. Factorio 2.0 compatible, no flib dependency, exact tile-by-tile powered floor behaviour, improved runtime syncing, and Q/pipette support for all powered tile variants.",
+  "description": "Powered Concrete adds powered versions of concrete, refined concrete, and hazard concrete so your factory floor can carry electric coverage without visible power poles. Factorio 2.0 compatible with clean visible floor recipes, exact tile-by-tile power, Q/pipette support, and hidden conversion recipes kept out of the crafting UI.",
   "factorio_version": "2.0",
   "dependencies": [
     "base >= 2.0.0"

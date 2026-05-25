@@ -1,38 +1,61 @@
 # Powered Concrete
 
-**Powered Concrete** is a Factorio 2.0 mod that lets concrete, refined concrete, and hazard concrete carry electric coverage through the floor.
+**Powered Concrete** is a Factorio 2.0 mod that lets concrete floors carry electric coverage without visible power poles everywhere.
 
-It keeps the factory floor clean by using hidden electric connectors under powered tiles, so you can build neat late-game factory layouts without placing visible power poles everywhere.
+This release keeps the crafting menu clean by showing only the real floor tiles players actually need: vanilla floor tiles plus the powered concrete variants. Extra conversion recipes like hazard-marking and unpowered-return recipes are kept hidden so they do not clutter the inventory/crafting UI.
+
+## Visible Floor Recipes
+
+The intended in-game floor list is:
+
+- Stone Brick
+- Concrete
+- Hazard Concrete
+- Refined Concrete
+- Refined Hazard Concrete
+- Powered Concrete
+- Powered Hazard Concrete
+- Powered Refined Concrete
+- Powered Refined Hazard Concrete
 
 ## Features
 
 - Powered Concrete
-- Powered Refined Concrete
 - Powered Hazard Concrete
+- Powered Refined Concrete
 - Powered Refined Hazard Concrete
-- Exact tile-by-tile power coverage
+- Hidden floor-based electric coverage
+- Exact tile-by-tile powered floor logic
+- Power only exists where powered concrete has actually been placed
 - No grid-based power zones
-- No visible power poles on the floor
-- Q / pipette support for all powered concrete variants
-- Factorio 2.0 compatibility fixes
+- No visible power poles across your factory floor
+- Q / pipette support for normal, refined, and hazard variants
+- Works with normal building, mining, robot placement, and script tile changes
+- `/powered-concrete-rebuild` admin command
+- Factorio 2.0 compatible
 - No `flib` dependency
-- Cleaner runtime syncing for better UPS behaviour than the older tick-heavy setup
+- Cleaner crafting layout with conversion recipes hidden
+
+## Hidden Recipes
+
+The following extra conversion-style recipes are intentionally hidden from the normal crafting UI:
+
+- Unpowered Concrete
+- Unpowered Hazard Concrete
+- Unpowered Refined Concrete
+- Unpowered Refined Hazard Concrete
+- Remove Concrete Hazard Markings
+- Remove Refined Concrete Hazard Markings
+- Remove Powered Concrete Hazard Markings
+- Add Powered Concrete Hazard Markings
+- Remove Powered Refined Concrete Hazard Markings
+- Add Powered Refined Concrete Hazard Markings
 
 ## How It Works
 
-When powered concrete is placed, the mod creates hidden electric connectors under the powered tiles. These connectors provide electrical coverage while keeping the surface clean.
+When powered concrete is placed, the mod creates hidden electric connectors under the powered tiles. These connectors provide electrical coverage while keeping the surface visually clean.
 
 The system tracks tile placement and removal from players, robots, mining, and script-based changes so the hidden power network stays synced with the actual floor.
-
-This version uses exact tile logic. Power exists only where powered concrete actually exists, instead of using broad grid zones.
-
-## UPS / Big Base Notes
-
-Powered Concrete does not run a constant per-tick update loop during normal gameplay. It reacts to tile changes, stores hidden connector references, and deduplicates changed tile positions before syncing.
-
-Exact tile-by-tile power is naturally heavier than a grid-based approximation in huge paved bases, because each powered tile needs its own hidden connector. This release keeps exact behaviour because it feels better and is more honest to the tile placement.
-
-For very large bases, use powered concrete where it matters most instead of paving the entire map with powered tiles.
 
 ## Admin Command
 
@@ -48,15 +71,15 @@ Built for **Factorio 2.0**.
 
 ## Install
 
-Place `Powered_Concrete_1.0.9.zip` in your Factorio `mods` folder and enable **Powered Concrete** from the in-game Mods menu.
+Place `Powered_Concrete_1.1.1.zip` in your Factorio `mods` folder and enable **Powered Concrete** from the in-game Mods menu.
 
 Factorio internal mod IDs cannot use spaces, so the technical mod ID is `Powered_Concrete`. The displayed mod title is **Powered Concrete**.
 
 ## Credits
 
-Original mod, concept, base implementation, icons, and artwork by **JuneGame**.
+Original **Powered Concrete** mod by **JuneGame**.
 
-Factorio 2.0 compatibility, cleanup, exact-tile runtime pass, Q / pipette fixes, documentation, and release packaging by **Squishy1870**.
+This release is a **Factorio 2.0 compatibility, cleanup, and packaging pass** by **Squishy1870**.
 
 ## License / Redistribution Notice
 

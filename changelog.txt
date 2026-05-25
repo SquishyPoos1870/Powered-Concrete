@@ -1,4 +1,28 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.1.1
+Date: 2026-05-25
+  Changes:
+    - Restored the four visible powered floor recipes: Powered Concrete, Powered Hazard Concrete, Powered Refined Concrete, and Powered Refined Hazard Concrete.
+    - Kept powered floor items in the same floor/concrete crafting area as vanilla concrete items for a cleaner layout.
+    - Kept conversion and hazard-marking recipes hidden, including Remove Powered Concrete Hazard Markings and similar add/remove marking recipes.
+    - Added runtime recipe-state cleanup so old saves upgrading from previous versions do not keep hidden conversion recipes enabled in the crafting UI.
+    - Updated README and Mod Portal description to match the new intended visible recipe list.
+  Notes:
+    - Intended visible floor list is vanilla floor items plus the four powered concrete variants only.
+
+---------------------------------------------------------------------------------------------------
+Version: 1.1.0
+Date: 2026-05-25
+  Changes:
+    - Simplified the normal crafting UI so only Powered Concrete is visible/unlocked.
+    - Hid the extra powered refined/hazard recipes because they all performed the same power function and cluttered the layout.
+    - Stopped moving vanilla hazard concrete conversion recipes into the powered concrete subgroup.
+    - Kept old powered refined/hazard item, tile, and recipe prototypes as hidden compatibility support for older saves/blueprints.
+    - Kept exact tile-by-tile hidden power behaviour and the /powered-concrete-rebuild command.
+  Notes:
+    - New players should now only see one Powered Concrete recipe after concrete research.
+
+---------------------------------------------------------------------------------------------------
 Version: 1.0.9
 Date: 2026-05-25
   Changes:
