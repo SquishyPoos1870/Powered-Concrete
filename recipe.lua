@@ -1,0 +1,70 @@
+{
+  "entity": [
+    [
+      "pcsa-hidden-powered-tile-pole",
+      "powered-tile"
+    ]
+  ],
+  "item": [
+    [
+      "pcsa-powered-concrete",
+      "powered-concrete"
+    ],
+    [
+      "pcsa-powered-hazard-concrete",
+      "powered-hazard-concrete"
+    ],
+    [
+      "pcsa-powered-refined-concrete",
+      "powered-refined-concrete"
+    ],
+    [
+      "pcsa-powered-refined-hazard-concrete",
+      "powered-refined-hazard-concrete"
+    ]
+  ],
+  "tile": [
+    [
+      "pcsa-powered-concrete",
+      "powered-concrete"
+    ],
+    [
+      "pcsa-powered-hazard-concrete-left",
+      "powered-hazard-concrete-left"
+    ],
+    [
+      "pcsa-powered-hazard-concrete-right",
+      "powered-hazard-concrete-right"
+    ],
+    [
+      "pcsa-powered-refined-concrete",
+      "powered-refined-concrete"
+    ],
+    [
+      "pcsa-powered-refined-hazard-concrete-left",
+      "powered-refined-hazard-concrete-left"
+    ],
+    [
+      "pcsa-powered-refined-hazard-concrete-right",
+      "powered-refined-hazard-concrete-right"
+    ]
+  ],
+  "recipe": [
+    [
+      "pcsa-powered-concrete",
+      "powered-concrete"
+    ],
+    [
+      "pcsa-powered-hazard-concrete",
+      "powered-hazard-concrete"
+    ],
+    [
+      "pcsa-powered-refined-concrete",
+      "powered-refined-concrete"
+    ],
+    [
+      "pcsa-powered-refined-hazard-concrete",
+      "powered-refined-hazard-concrete"
+    ]
+  ]
+}

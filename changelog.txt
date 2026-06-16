@@ -1,4 +1,51 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.2.3
+Date: 2026-06-17
+  Changes:
+    - Refreshed the powered, unpowered, convert, and powered-convert overlay icons with cleaner high-contrast artwork.
+    - Updated README, Mod Portal text, and GitHub summary to match the current 1.2.x behaviour.
+    - Clarified that connector grid size 1 is the default exact tile-by-tile mode, while larger values are optional UPS tuning for large bases and servers.
+    - Kept the PoweredConcreteSpaceAge 0.1.x migration support and incompatible dependency marker from 1.2.2.
+  Bugfixes:
+    - Fixed stale description text that still referred to older 1.2.0 / 1.2.1 defaults.
+    - Fixed install/version wording so the package now points to Powered_Concrete_1.2.3.zip.
+
+---------------------------------------------------------------------------------------------------
+Version: 1.2.2
+Date: 2026-06-17
+  Changes:
+    - Added migration support from the deprecated PoweredConcreteSpaceAge 0.1.x mod to Powered_Concrete.
+    - Migrates PCSA concrete items, placed tiles, recipes, and hidden powered-tile poles to the main Powered Concrete prototype names.
+    - Marks PoweredConcreteSpaceAge as incompatible so players do not run both mods at the same time.
+  Notes:
+    - Optional PCSA/Krastorio reinforced powered plates are not converted because Powered Concrete does not currently define replacement prototypes for them.
+
+---------------------------------------------------------------------------------------------------
+Version: 1.2.1
+Date: 2026-06-07
+  Changes:
+    - Changed the default connector grid size from 4 back to 1.
+    - Exact tile-by-tile powered floor coverage is now the default behaviour again.
+    - Kept the optional sparse connector UPS mode available through the startup setting for large bases and servers.
+    - Updated internal fallback defaults and documentation so the default mode is clear.
+  Notes:
+    - Set the startup setting higher than 1 only if you want fewer hidden connectors and are okay with cell-based coverage.
+
+---------------------------------------------------------------------------------------------------
+Version: 1.2.0
+Date: 2026-06-07
+  Changes:
+    - Added a major UPS optimisation pass for large powered-floor builds.
+    - Replaced the default one-hidden-pole-per-tile runtime model with sparse hidden connector cells.
+    - Added startup setting `powered-concrete-connector-grid-size`; 1 keeps exact tile-by-tile mode, 4 is the new balanced default, higher values reduce connector count further for huge bases.
+    - Batched tile-change syncing by connector cell instead of processing every changed tile as a separate hidden electric pole.
+    - Removed repeated per-tile stray connector searches from normal placement/removal paths.
+    - Added automatic migration cleanup from the old per-tile storage table.
+    - Updated documentation and Mod Portal description with the UPS mode details.
+  Notes:
+    - The default mode is much lighter for city blocks and huge paved factories, but coverage is now cell-based. Set the startup setting to 1 if you need the older exact behaviour.
+
+---------------------------------------------------------------------------------------------------
 Version: 1.1.1
 Date: 2026-05-25
   Changes:

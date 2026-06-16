@@ -1,11 +1,12 @@
 {
   "name": "Powered_Concrete",
-  "version": "1.1.1",
+  "version": "1.2.3",
   "title": "Powered Concrete",
   "author": "Squishy1870; original mod by JuneGame",
-  "description": "Powered Concrete adds powered versions of concrete, refined concrete, and hazard concrete so your factory floor can carry electric coverage without visible power poles. Factorio 2.0 compatible with clean visible floor recipes, exact tile-by-tile power, Q/pipette support, and hidden conversion recipes kept out of the crafting UI.",
+  "description": "Powered Concrete adds powered versions of concrete, refined concrete, and hazard concrete so your factory floor can carry electric coverage without visible power poles. Version 1.2.3 refreshes the overlay icons, keeps exact tile-by-tile coverage as the default, retains the optional connector-grid UPS mode for large bases and servers, and includes migration support from PoweredConcreteSpaceAge 0.1.x saves.",
   "factorio_version": "2.0",
   "dependencies": [
-    "base >= 2.0.0"
+    "base >= 2.0.0",
+    "! PoweredConcreteSpaceAge"
   ]
 }

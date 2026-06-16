@@ -1,14 +1,3 @@
-local POWERED_TILES = {
-  ["powered-concrete"] = true,
-
-  -- All powered concrete variants remain exact tile-by-tile powered floor tiles.
-  ["powered-hazard-concrete-left"] = true,
-  ["powered-hazard-concrete-right"] = true,
-  ["powered-refined-concrete"] = true,
-  ["powered-refined-hazard-concrete-left"] = true,
-  ["powered-refined-hazard-concrete-right"] = true
-}
-
 local POWERED_TILE_NAMES = {
   "powered-concrete",
   "powered-hazard-concrete-left",
@@ -40,9 +29,25 @@ local HIDDEN_RECIPES = {
   "hazarded-powered-refined-concrete"
 }
 
+local function startup_grid_size()
+  local setting = settings and settings.startup and settings.startup["powered-concrete-connector-grid-size"]
+  local value = setting and tonumber(setting.value) or 1
+
+  if value < 1 then value = 1 end
+  if value > 16 then value = 16 end
+
+  return math.floor(value)
+end
+
+local GRID_SIZE = startup_grid_size()
+
 local function init_storage()
   storage.powered_concrete = storage.powered_concrete or {}
-  storage.powered_concrete.nodes = storage.powered_concrete.nodes or {}
+  storage.powered_concrete.cells = storage.powered_concrete.cells or {}
+
+  -- Pre-1.2.0 used storage.powered_concrete.nodes for one connector per tile.
+  -- Keep old saves clean after migration without carrying the heavy table forward.
+  storage.powered_concrete.nodes = nil
 end
 
 local function fallback_force()
@@ -68,108 +73,107 @@ local function tile_xy(position)
   return math.floor(position.x or position[1]), math.floor(position.y or position[2])
 end
 
-local function tile_key(x, y)
-  return x .. ":" .. y
+local function cell_xy_for_tile(x, y)
+  return math.floor(x / GRID_SIZE), math.floor(y / GRID_SIZE)
 end
 
-local function connector_position(x, y)
-  -- TilePosition values identify the tile. Offset by half a tile so the hidden pole sits on the tile centre.
-  return {x + 0.5, y + 0.5}
+local function cell_key(cell_x, cell_y)
+  return cell_x .. ":" .. cell_y
 end
 
-local function get_surface_nodes(surface_index)
-  init_storage()
-  local nodes = storage.powered_concrete.nodes[surface_index]
-  if not nodes then
-    nodes = {}
-    storage.powered_concrete.nodes[surface_index] = nodes
-  end
-  return nodes
-end
+local function cell_area(cell_x, cell_y)
+  local left_top_x = cell_x * GRID_SIZE
+  local left_top_y = cell_y * GRID_SIZE
 
-local function destroy_node(node)
-  if node and node.valid then
-    node.destroy({raise_destroy = false})
-  end
-end
-
-local function find_existing_node(surface, x, y)
-  local position = connector_position(x, y)
-  local found = surface.find_entities_filtered{
-    name = CONNECTOR_NAME,
-    position = position,
-    radius = 0.25,
-    limit = 1
+  return {
+    {left_top_x, left_top_y},
+    {left_top_x + GRID_SIZE, left_top_y + GRID_SIZE}
   }
-  return found[1]
 end
 
-local function ensure_node(surface, x, y, force)
-  local nodes = get_surface_nodes(surface.index)
-  local key = tile_key(x, y)
-  local existing = nodes[key]
+local function connector_position(cell_x, cell_y)
+  local offset = GRID_SIZE / 2
+  return {cell_x * GRID_SIZE + offset, cell_y * GRID_SIZE + offset}
+end
+
+local function get_surface_cells(surface_index)
+  init_storage()
+
+  local cells = storage.powered_concrete.cells[surface_index]
+  if not cells then
+    cells = {}
+    storage.powered_concrete.cells[surface_index] = cells
+  end
+
+  return cells
+end
+
+local function destroy_connector(entity)
+  if entity and entity.valid then
+    entity.destroy({raise_destroy = false})
+  end
+end
+
+local function cell_has_powered_tile(surface, cell_x, cell_y)
+  return surface.count_tiles_filtered{
+    area = cell_area(cell_x, cell_y),
+    name = POWERED_TILE_NAMES,
+    limit = 1
+  } > 0
+end
+
+local function ensure_cell_connector(surface, cell_x, cell_y, force)
+  local cells = get_surface_cells(surface.index)
+  local key = cell_key(cell_x, cell_y)
+  local existing = cells[key]
 
   if existing and existing.valid then
     return existing
   end
 
-  existing = find_existing_node(surface, x, y)
-  if existing and existing.valid then
-    nodes[key] = existing
-    return existing
-  end
-
-  local node = surface.create_entity{
+  local connector = surface.create_entity{
     name = CONNECTOR_NAME,
-    position = connector_position(x, y),
+    position = connector_position(cell_x, cell_y),
     force = force or fallback_force(),
     raise_built = false
   }
 
-  if node and node.valid then
-    node.destructible = false
-    node.minable = false
-    node.operable = false
-    nodes[key] = node
-    return node
+  if connector and connector.valid then
+    connector.destructible = false
+    connector.minable = false
+    connector.operable = false
+    cells[key] = connector
+    return connector
   end
 
-  nodes[key] = nil
+  cells[key] = nil
   return nil
 end
 
-local function remove_node(surface, x, y)
-  local nodes = get_surface_nodes(surface.index)
-  local key = tile_key(x, y)
+local function remove_cell_connector(surface, cell_x, cell_y)
+  local cells = get_surface_cells(surface.index)
+  local key = cell_key(cell_x, cell_y)
 
-  destroy_node(nodes[key])
-  nodes[key] = nil
-
-  -- Clean up any stray connector that may exist from older versions or manual script changes.
-  local stray = find_existing_node(surface, x, y)
-  destroy_node(stray)
+  destroy_connector(cells[key])
+  cells[key] = nil
 end
 
-local function is_powered_tile(surface, x, y)
-  local tile = surface.get_tile(x, y)
-  return tile and POWERED_TILES[tile.name] or false
-end
-
-local function sync_tile(surface, x, y, force)
-  if is_powered_tile(surface, x, y) then
-    ensure_node(surface, x, y, force)
+local function sync_cell(surface, cell_x, cell_y, force)
+  if cell_has_powered_tile(surface, cell_x, cell_y) then
+    ensure_cell_connector(surface, cell_x, cell_y, force)
   else
-    remove_node(surface, x, y)
+    remove_cell_connector(surface, cell_x, cell_y)
   end
 end
 
-local function collect_changed_tiles(tiles)
+local function collect_changed_cells(tiles)
   local changed = {}
 
   for _, tile in pairs(tiles or {}) do
     if tile.position then
-      local x, y = tile_xy(tile.position)
-      changed[tile_key(x, y)] = {x = x, y = y}
+      local tile_x, tile_y = tile_xy(tile.position)
+      local cell_x, cell_y = cell_xy_for_tile(tile_x, tile_y)
+      changed[cell_key(cell_x, cell_y)] = {x = cell_x, y = cell_y}
     end
   end
 
@@ -181,32 +185,42 @@ local function on_tiles_changed(event)
   if not surface then return end
 
   local force = force_from_event(event)
-  local changed_tiles = collect_changed_tiles(event.tiles)
+  local changed_cells = collect_changed_cells(event.tiles)
 
-  for _, tile in pairs(changed_tiles) do
-    sync_tile(surface, tile.x, tile.y, force)
+  for _, cell in pairs(changed_cells) do
+    sync_cell(surface, cell.x, cell.y, force)
   end
 end
 
-local function destroy_all_nodes(surface)
+local function destroy_all_connectors(surface)
   for _, entity in pairs(surface.find_entities_filtered{name = CONNECTOR_NAME}) do
-    destroy_node(entity)
+    destroy_connector(entity)
   end
-  storage.powered_concrete.nodes[surface.index] = {}
+
+  storage.powered_concrete.cells[surface.index] = {}
 end
 
 local function rebuild_surface(surface)
-  destroy_all_nodes(surface)
+  destroy_all_connectors(surface)
 
   local force = fallback_force()
+  local rebuilt_cells = {}
+
   for _, tile in pairs(surface.find_tiles_filtered{name = POWERED_TILE_NAMES}) do
-    local x, y = tile_xy(tile.position)
-    ensure_node(surface, x, y, force)
+    local tile_x, tile_y = tile_xy(tile.position)
+    local cell_x, cell_y = cell_xy_for_tile(tile_x, tile_y)
+    local key = cell_key(cell_x, cell_y)
+
+    if not rebuilt_cells[key] then
+      ensure_cell_connector(surface, cell_x, cell_y, force)
+      rebuilt_cells[key] = true
+    end
   end
 end
 
 local function rebuild_all_surfaces()
   init_storage()
+
   for _, surface in pairs(game.surfaces) do
     rebuild_surface(surface)
   end
@@ -236,7 +250,7 @@ end
 
 local function on_surface_removed(event)
   init_storage()
-  storage.powered_concrete.nodes[event.surface_index] = nil
+  storage.powered_concrete.cells[event.surface_index] = nil
 end
 
 script.on_init(function()
